@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Migrations\" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Microsoft.EntityFrameworkCore.Sqlite" />
+    <None Remove="Repository\" />
+    <None Remove="Repository\IRepository\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Repository\IRepository\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BulkyBook.Models\BulkyBook.Models.csproj" />
+  </ItemGroup>
+</Project>

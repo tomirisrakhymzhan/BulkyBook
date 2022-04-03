@@ -5,23 +5,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BulkyBookWeb.Models;
+using BulkyBook.Models;
+using BulkyBook.DataAccess;
+using BulkyBook.DataAccess.Repository;
+using BulkyBook.DataAccess.Repository.IRepository;
 
 namespace BulkyBookWeb.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDBContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoriesController(ApplicationDBContext context)
+        public CategoriesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
+
+
 
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Category.ToListAsync());
+            return View(await _unitOfWork.Category.GetAllAsync());
         }
 
         // GET: Categories/Details/5
@@ -32,8 +37,8 @@ namespace BulkyBookWeb.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _unitOfWork.Category
+                .GetFirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -61,8 +66,8 @@ namespace BulkyBookWeb.Controllers
             }
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                _unitOfWork.Category.Add(category);
+                await _unitOfWork.SaveAsync();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction(nameof(Index));
             }
@@ -78,7 +83,7 @@ namespace BulkyBookWeb.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category.FindAsync(id);
+            var category = await _unitOfWork.Category.GetFirstOrDefaultAsync(m => m.Id == id); ;
             if (category == null)
             {
                 return NotFound();
@@ -105,8 +110,8 @@ namespace BulkyBookWeb.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    _unitOfWork.Category.Update(category);
+                    await _unitOfWork.SaveAsync();
                     TempData["success"] = "Category updated successfully";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -133,8 +138,8 @@ namespace BulkyBookWeb.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _unitOfWork.Category
+                .GetFirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -148,16 +153,17 @@ namespace BulkyBookWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Category.FindAsync(id);
-            _context.Category.Remove(category);
-            await _context.SaveChangesAsync();
+            var category = await _unitOfWork.Category
+                .GetFirstOrDefaultAsync(m => m.Id == id);
+            _unitOfWork.Category.Remove(category);
+            await _unitOfWork.SaveAsync();
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-            return _context.Category.Any(e => e.Id == id);
+            return _unitOfWork.Category.Any(e => e.Id == id);
         }
     }
 }

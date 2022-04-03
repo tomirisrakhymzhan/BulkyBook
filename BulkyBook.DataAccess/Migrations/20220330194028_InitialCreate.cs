@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BulkyBookWeb.Migrations
+namespace BulkyBook.Migrations
 {
     public partial class InitialCreate : Migration
     {
