@@ -22,8 +22,6 @@ namespace BulkyBookWeb.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-
         // GET: Categories
         public async Task<IActionResult> Index()
         {
