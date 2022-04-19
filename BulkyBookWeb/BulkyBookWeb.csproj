@@ -47,5 +47,11 @@
     <Folder Include="Areas\Customer\Views\" />
     <Folder Include="Areas\Admin\Views\Categories\" />
     <Folder Include="Areas\Customer\Views\Home\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\images\products\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\images\" />
+    <Content Remove="wwwroot\images\products\" />
   </ItemGroup>
 </Project>
