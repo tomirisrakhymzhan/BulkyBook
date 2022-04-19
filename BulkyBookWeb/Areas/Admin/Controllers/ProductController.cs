@@ -130,5 +130,15 @@ namespace BulkyBookWeb.Controllers
             return RedirectToAction("Index");
 
         }
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var productList = _unitOfWork.Product.GetAll();
+            return Json(new { data = productList });
+        }
+        #endregion
     }
 }
+
