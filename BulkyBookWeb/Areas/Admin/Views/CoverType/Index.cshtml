@@ -1,0 +1,46 @@
+@model IEnumerable<BulkyBook.Models.CoverType>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">CoverType List</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> &nbsp; Create New CoverType
+            </a>
+        </div>
+    </div>
+    <br /><br />
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-plus-circle"></i> &nbsp; Edit</a> |
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-x-circle"></i> &nbsp; Delete</a>
+                    </td>
+                </tr>
+
+             }
+        </tbody>
+    </table>
+</div>
