@@ -37,11 +37,6 @@
     <None Remove="Areas\Admin\Views\Product %28copy%29\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BulkyBook.DataAccess\BulkyBook.DataAccess.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Areas\Admin\Views\" />
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Customer\Controllers\" />
@@ -55,5 +50,13 @@
   <ItemGroup>
     <Content Remove="wwwroot\images\" />
     <Content Remove="wwwroot\images\products\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BulkyBook.DataAccess\BulkyBook.DataAccess.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\BulkyBook.Utility\BulkyBook.Utility.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

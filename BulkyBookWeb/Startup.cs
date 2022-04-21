@@ -13,6 +13,8 @@ using BulkyBook.DataAccess;
 using BulkyBook.DataAccess.Repository;
 using BulkyBook.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
+using BulkyBook.Utility;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace BulkyBookWeb
 {
@@ -29,12 +31,12 @@ namespace BulkyBookWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
+            services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddDbContext<ApplicationDBContext>(options =>
                     options.UseSqlite(Configuration.GetConnectionString("ApplicationDBContext")));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
                     .AddEntityFrameworkStores<ApplicationDBContext>();
-
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
