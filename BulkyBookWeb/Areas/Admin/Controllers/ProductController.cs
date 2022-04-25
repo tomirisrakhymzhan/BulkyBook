@@ -72,7 +72,7 @@ namespace BulkyBookWeb.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(ProductVM obj, IFormFile? file)
+        public async Task<IActionResult> Upsert(ProductVM obj, IFormFile? file)
         {
 
             if (ModelState.IsValid)
@@ -103,13 +103,13 @@ namespace BulkyBookWeb.Controllers
                 if (obj.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(obj.Product);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     TempData["success"] = "Product created successfully";
                 }
                 else
                 {
                     _unitOfWork.Product.Update(obj.Product);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     TempData["success"] = "Product updated successfully";
                 }
 
@@ -120,15 +120,15 @@ namespace BulkyBookWeb.Controllers
 
         #region API CALLS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var productList = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType");
+            var productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category,CoverType");
             return Json(new { data = productList });
         }
         [HttpDelete]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            var obj = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+            var obj = await _unitOfWork.Product.GetFirstOrDefaultAsync(u => u.Id == id);
             if (obj == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
@@ -140,7 +140,7 @@ namespace BulkyBookWeb.Controllers
             }
 
             _unitOfWork.Product.Remove(obj);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Json(new { success = true, message = "Product delete was successful" });
 
         }

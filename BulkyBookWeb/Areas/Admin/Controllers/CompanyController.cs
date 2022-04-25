@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -29,7 +30,7 @@ namespace BulkyBookWeb.Controllers
         }
 
         //GET
-        public IActionResult Upsert(int? id)
+        public async Task<IActionResult> Upsert(int? id)
         {
             Company company = new();
 
@@ -39,7 +40,7 @@ namespace BulkyBookWeb.Controllers
             }
             else
             {
-                company = _unitOfWork.Company.GetFirstOrDefault(u => u.Id == id);
+                company = await _unitOfWork.Company.GetFirstOrDefaultAsync(u => u.Id == id);
                 return View(company);
             }
         }
@@ -47,7 +48,7 @@ namespace BulkyBookWeb.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(Company obj, IFormFile? file)
+        public async Task<IActionResult> Upsert(Company obj, IFormFile? file)
         {
 
             if (ModelState.IsValid)
@@ -63,7 +64,7 @@ namespace BulkyBookWeb.Controllers
                     _unitOfWork.Company.Update(obj);
                     TempData["success"] = "Company updated successfully";
                 }
-                _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
 
                 return RedirectToAction("Index");
             }
@@ -74,15 +75,15 @@ namespace BulkyBookWeb.Controllers
 
         #region API CALLS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var companyList = _unitOfWork.Company.GetAll();
+            var companyList = await _unitOfWork.Company.GetAllAsync();
             return Json(new { data = companyList });
         }
 
         //POST
         [HttpDelete]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             var obj = _unitOfWork.Company.GetFirstOrDefault(u => u.Id == id);
             if (obj == null)
@@ -91,7 +92,7 @@ namespace BulkyBookWeb.Controllers
             }
 
             _unitOfWork.Company.Remove(obj);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Json(new { success = true, message = "Company delete was successful" });
 
         }
