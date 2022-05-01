@@ -18,6 +18,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Stripe.net" Version="39.107.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +37,7 @@
     <None Remove="Areas\Customer\Views\Home\" />
     <None Remove="Areas\Admin\Views\Product %28copy%29\" />
     <None Remove="Areas\Customer\Views\Cart\" />
+    <None Remove="Stripe.net" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\" />
