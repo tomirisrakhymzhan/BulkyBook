@@ -7,5 +7,11 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.15" />
+    <PackageReference Include="MimeKit" Version="3.2.0" />
+    <PackageReference Include="MailKit" Version="3.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="MimeKit" />
+    <None Remove="MailKit" />
   </ItemGroup>
 </Project>
