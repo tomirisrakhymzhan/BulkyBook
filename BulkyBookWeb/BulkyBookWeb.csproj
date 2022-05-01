@@ -38,6 +38,7 @@
     <None Remove="Areas\Admin\Views\Product %28copy%29\" />
     <None Remove="Areas\Customer\Views\Cart\" />
     <None Remove="Stripe.net" />
+    <None Remove="Areas\Admin\Views\Order\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\" />
@@ -50,6 +51,7 @@
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="Areas\Admin\Views\Company\" />
     <Folder Include="Areas\Customer\Views\Cart\" />
+    <Folder Include="Areas\Admin\Views\Order\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\images\" />

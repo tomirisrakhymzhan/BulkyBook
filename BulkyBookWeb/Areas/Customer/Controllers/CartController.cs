@@ -89,8 +89,6 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 ShoppingCartVM.ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value,
                     includeProperties: "Product");
 
-                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
-                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
                 ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
                 ShoppingCartVM.OrderHeader.ApplicationUserId = claim.Value;
 
@@ -101,7 +99,18 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                         cart.Product.Price50, cart.Product.Price100);
                     ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
                 }
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == claim.Value);
 
+                if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+                {
+                    ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+                    ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+                }
+                else
+                {
+                    ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+                    ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+                }
 
                 _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
                 _unitOfWork.Save();
@@ -117,52 +126,57 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                     _unitOfWork.OrderDetail.Add(orderDetail);
                     _unitOfWork.Save();
                 }
-                //stripe settings 
-                var domain = "https://localhost:5001/";
-                var options = new SessionCreateOptions
-                {
-                    PaymentMethodTypes = new List<string>
-                    {
-                      "card",
-                    },
-                    LineItems = new List<SessionLineItemOptions>(),
-                    Mode = "payment",
-                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
-                    CancelUrl = domain + $"customer/cart/index",
-                };
 
-                foreach (var item in ShoppingCartVM.ListCart)
+                if (applicationUser.CompanyId.GetValueOrDefault() == 0)
                 {
-
-                    var sessionLineItem = new SessionLineItemOptions
+                    //stripe settings 
+                    var domain = "https://localhost:5001/";
+                    var options = new SessionCreateOptions
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        PaymentMethodTypes = new List<string>
                         {
-                            UnitAmount = (long)(item.Price * 100),//20.00 -> 2000
-                            Currency = "usd",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = item.Product.Title
-                            },
-
+                          "card",
                         },
-                        Quantity = item.Count,
+                        LineItems = new List<SessionLineItemOptions>(),
+                        Mode = "payment",
+                        SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+                        CancelUrl = domain + $"customer/cart/index",
                     };
-                    options.LineItems.Add(sessionLineItem);
 
+                    foreach (var item in ShoppingCartVM.ListCart)
+                    {
+
+                        var sessionLineItem = new SessionLineItemOptions
+                        {
+                            PriceData = new SessionLineItemPriceDataOptions
+                            {
+                                UnitAmount = (long)(item.Price * 100),//20.00 -> 2000
+                                Currency = "usd",
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = item.Product.Title
+                                },
+
+                            },
+                            Quantity = item.Count,
+                        };
+                        options.LineItems.Add(sessionLineItem);
+
+                    }
+
+                    var service = new SessionService();
+                    Session session = service.Create(options);
+                    _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+                    _unitOfWork.Save();
+                    Response.Headers.Add("Location", session.Url);
+                    return new StatusCodeResult(303);
                 }
 
-                var service = new SessionService();
-                Session session = service.Create(options);
-                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
-                _unitOfWork.Save();
-                Response.Headers.Add("Location", session.Url);
-                return new StatusCodeResult(303);
+                else
+                {
+                    return RedirectToAction("OrderConfirmation", "Cart", new { id = ShoppingCartVM.OrderHeader.Id });
+                }
 
-
-                //_unitOfWork.ShoppingCart.RemoveRange(ShoppingCartVM.ListCart);
-                //_unitOfWork.Save();
-                //return RedirectToAction("Index", "Home");
             }
 
             return RedirectToAction("Index", "Home");
@@ -171,14 +185,18 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         public IActionResult OrderConfirmation(int id)
         {
             OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
-            var service = new SessionService();
-            Session session = service.Get(orderHeader.SessionId);
-            //check the stripe status
-            if (session.PaymentStatus.ToLower() == "paid")
+            if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
             {
-                _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
-                _unitOfWork.Save();
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+                //check the stripe status
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
             }
+
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId ==
             orderHeader.ApplicationUserId).ToList();
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
