@@ -36,7 +36,7 @@ namespace BulkyBookWeb
             services.AddRazorPages().AddRazorRuntimeCompilation();
             // services.AddDbContext<ApplicationDBContext>(options =>
             //         options.UseNpgsql(Configuration.GetConnectionString("ApplicationDBContext")));
-            services.AddDbContext<DataContext>(options =>
+            services.AddDbContext<ApplicationDBContext>(options =>
             {
                 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -47,7 +47,7 @@ namespace BulkyBookWeb
                 if (env == "Development")
                 {
                     // Use connection string from file.
-                    connStr = config.GetConnectionString("DefaultConnection");
+                    connStr = Configuration.GetConnectionString("DefaultConnection");
                 }
                 else
                 {
