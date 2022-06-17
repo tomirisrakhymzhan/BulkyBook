@@ -1,5 +1,7 @@
 ﻿@using BulkyBook.Utility
-
+@using Microsoft.AspNetCore.Http
+@using BulkyBook.Utility
+@inject IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +37,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Content Managment</a>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Categories" asp-action="Index">Category</a>
                                     <a class="dropdown-item" asp-area="Admin" asp-controller="CoverType" asp-action="Index">Cover Type</a>
                                     <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
                                     <div class="dropdown-divider"></div>
@@ -48,11 +50,28 @@
                                 Manage Order
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class=nav-link asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart"></i>
-                            </a>
-                        </li>
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart) != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart"></i>
+                                    <span class="position-absolute top-10 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart)
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                    @*&nbsp;
+        (@HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart))*@
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class=nav-link asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart"></i> &nbsp; (0)
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
 

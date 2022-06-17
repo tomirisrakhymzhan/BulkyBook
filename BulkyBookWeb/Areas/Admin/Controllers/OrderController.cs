@@ -200,7 +200,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         public IActionResult GetAll(string status)
         {
             IEnumerable<OrderHeader> orderHeaders;
-            orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
             if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
             {
                 orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
