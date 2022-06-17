@@ -35,7 +35,7 @@ namespace BulkyBookWeb
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddDbContext<ApplicationDBContext>(options =>
-                    options.UseSqlite(Configuration.GetConnectionString("ApplicationDBContext")));
+                    options.UseNpgsql(Configuration.GetConnectionString("ApplicationDBContext")));
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
