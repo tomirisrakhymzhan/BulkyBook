@@ -1,16 +1,29 @@
-﻿@model IEnumerable<BulkyBook.Models.Product>
+﻿@model BulkyBook.Models.ViewModels.ProductListVM
 @{
     ViewData["Title"] = "Home Page";
 }
 
+<div class="row">
+    <form asp-controller="Home" asp-action="Index" method="get">
+        <h6>
+            Category:
+            <select class="mr-3" asp-for="Category" asp-items="Model.CategoryList">
+                <option value="">All</option>
+            </select>
+
+            Title: <input type="text" asp-for="SearchString" />
+            <input class="btn btn-primary rounded m-3" id="ticketFilterBtn" type="submit" value="Filter" />
+        </h6>
+    </form>
+</div>
 <div class="row pb-3">
-    @foreach (var product in Model)
+    @foreach (var product in Model.Products)
     {
         <div class="col-lg-3 col-md-6">
             <div class="row p-2">
                 <div class="col-12 p-1" style="border:1px solid #008cba; border-radius: 5px;">
                     <div class="card">
-                        <img  width="250" height="350" src="@product.ImageUrl" class="card-img-top rounded" />
+                        <img width="250" height="350" src="@product.ImageUrl" class="card-img-top rounded" />
 
                         <div class="card-body">
                             <div class="pl-1">

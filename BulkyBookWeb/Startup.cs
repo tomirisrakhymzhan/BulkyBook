@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
+using BulkyBook.DataAccess.DBInitializer;
 
 namespace BulkyBookWeb
 {
@@ -43,6 +44,7 @@ namespace BulkyBookWeb
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDBInitializer, DBInitializer>();
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = $"/Identity/Account/Login";
@@ -65,7 +67,7 @@ namespace BulkyBookWeb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDBInitializer dBInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -83,8 +85,7 @@ namespace BulkyBookWeb
             app.UseRouting();
 
             StripeConfiguration.ApiKey = Configuration.GetSection("Stripe:SecretKey").Get<string>();
-
-
+            dBInitializer.Initialize();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
@@ -96,7 +97,7 @@ namespace BulkyBookWeb
                     name: "default",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
-        });
+            });
         }
     }
 }

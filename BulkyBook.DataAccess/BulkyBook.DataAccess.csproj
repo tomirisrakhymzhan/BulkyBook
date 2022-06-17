@@ -15,11 +15,13 @@
     <None Remove="Microsoft.AspNetCore.Identity.UI" />
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
+    <None Remove="DBInitializer\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="Repository\" />
     <Folder Include="Repository\IRepository\" />
+    <Folder Include="DBInitializer\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.15" />
@@ -38,5 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BulkyBook.Models\BulkyBook.Models.csproj" />
+    <ProjectReference Include="..\BulkyBook.Utility\BulkyBook.Utility.csproj" />
   </ItemGroup>
 </Project>

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using BulkyBook.Utility;
+using BulkyBook.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -27,11 +29,31 @@ namespace BulkyBookWeb.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchString, int? category)
         {
-            IEnumerable<Product> productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category,CoverType");
+            //get all products
+            var products = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType");
+            //apply search
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(u => u.Title.Contains(searchString));
+            }
+            //apply category filter if any
+            if (category != null)
+            {
+                products = products.Where(u => u.Category.Id == category);
+            }
+            ProductListVM productListVM = new()
+            {
+                CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                }),
+                Products = products.ToList()
+            };
 
-            return View(productList);
+            return View(productListVM);
         }
 
         public async Task<IActionResult> Details(int productId)
