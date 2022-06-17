@@ -40,6 +40,8 @@ namespace BulkyBookWeb
             services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
                     .AddEntityFrameworkStores<ApplicationDBContext>();
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.ConfigureApplicationCookie(options =>
             {
@@ -53,6 +55,11 @@ namespace BulkyBookWeb
                 options.IdleTimeout = TimeSpan.FromMinutes(100);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+            });
+            services.AddAuthentication().AddFacebook(options =>
+            {
+                options.AppId = "527467182458437";
+                options.AppSecret = "757208b0e2b238bad1a5e63df07c2bc3";
             });
 
         }

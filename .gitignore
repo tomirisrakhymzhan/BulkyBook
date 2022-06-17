@@ -1,3 +1,6 @@
+appsettings.json
+ApplicationDBContext-4cf26099-61ec-4d83-b39d-bce392e92141.db-shm
+ApplicationDBContext-4cf26099-61ec-4d83-b39d-bce392e92141.db-wal
 # globs
 Makefile.in
 *.userprefs
