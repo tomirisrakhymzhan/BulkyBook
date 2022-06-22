@@ -17,6 +17,8 @@ For payments processing used [Stripe API](https://stripe.com/docs/payments/payme
 
 Configured alternative FaceBook login.
 
+For image store used [Cloudinary](https://cloudinary.com/) API.
+
 ## N-tier Architecture
  Solution was structured with n-tier architecture concept in mind.
  - BulkyBook.DataAccess layer contains code for accessing database. Impemented **Repository and UnitOfWork pattern** to isolate data accessing logic.
