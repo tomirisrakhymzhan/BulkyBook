@@ -10,5 +10,7 @@ namespace BulkyBook.Models.ViewModels
         public IEnumerable<SelectListItem> CategoryList { get; set; }
         public string Category { get; set; }
         public string SearchString { get; set; }
+        public string Author { get; set; }
+
     }
 }

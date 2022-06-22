@@ -29,7 +29,7 @@ namespace BulkyBookWeb.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(string searchString, int? category)
+        public IActionResult Index(string searchString, int? category, string author)
         {
             //get all products
             var products = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType,CoverPhoto");
@@ -42,6 +42,11 @@ namespace BulkyBookWeb.Controllers
             if (category != null)
             {
                 products = products.Where(u => u.Category.Id == category);
+            }
+            //apply author filter if any
+            if (author != null)
+            {
+                products = products.Where(u => u.Author.Contains(author));
             }
             ProductListVM productListVM = new()
             {
