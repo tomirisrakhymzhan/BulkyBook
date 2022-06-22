@@ -55,7 +55,7 @@
                 <span asp-validation-for="Product.Price100" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Product.ImageUrl" class="control-label"></label>
+                <label asp-for="Product.CoverPhoto.Url" class="control-label"></label>
                 <input type="file" id="uploadBox" name="file" class="form-control" />
             </div>
             <div class="form-group">
@@ -83,8 +83,12 @@
         </form>
     </div>
     <div class="col-md-3 pt-4">
-        <img src="@Model.Product.ImageUrl"
-             width="100%" height="50%"style="border-radius:5px; border:1px solid #bbb9b9" />
+        @if (Model.Product != null && Model.Product.CoverPhoto!=null)
+        {
+            <img src="@Model.Product.CoverPhoto.Url"
+                width="100%" height="50%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        }
+
     </div>
 </div>
 

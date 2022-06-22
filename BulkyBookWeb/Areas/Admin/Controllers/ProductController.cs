@@ -71,6 +71,7 @@ namespace BulkyBookWeb.Controllers
             {
                 // update product
                 productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+                productVM.Product.CoverPhoto = _unitOfWork.CoverPhoto.GetFirstOrDefault(u => u.Id==productVM.Product.CoverPhotoId);
                 return View(productVM);
             }
 

@@ -7,12 +7,12 @@
     <form asp-controller="Home" asp-action="Index" method="get">
         <h6>
             Category:
-            <select style=" height: 2em;" class="mr-3" asp-for="Category" asp-items="Model.CategoryList">
+            <select style=" height: 2em; font-size:16px;" class="mr-3" asp-for="Category" asp-items="Model.CategoryList">
                 <option value="">All</option>
             </select>
-            Title: <input style=" height: 2em;" type="text" asp-for="SearchString" />
-            Author: <input style=" height: 2em;" type="text" asp-for="Author" />
-            <input class="btn btn-primary rounded m-3" id="ticketFilterBtn" type="submit" value="Filter" />
+            Title: <input style=" height: 2em; font-size:16px;" type="text" asp-for="SearchString" />
+            Author: <input style=" height: 2em; font-size:16px;" type="text" asp-for="Author" />
+            <input class="btn btn-medium btn-primary rounded m-3" id="ticketFilterBtn" type="submit" value="Filter" />
         </h6>
     </form>
 </div>
