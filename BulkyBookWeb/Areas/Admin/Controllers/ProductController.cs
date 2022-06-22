@@ -13,7 +13,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -23,11 +24,15 @@ namespace BulkyBookWeb.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly Cloudinary _cloudinary;
 
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
+        public ProductController(IUnitOfWork unitOfWork,
+                                IWebHostEnvironment hostEnvironment,
+                                Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _hostEnvironment = hostEnvironment;
+            _cloudinary = cloudinary;
         }
 
         // GET: Product
@@ -80,28 +85,51 @@ namespace BulkyBookWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _hostEnvironment.WebRootPath;
+                //string wwwRootPath = _hostEnvironment.WebRootPath;
+                //if (file != null)
+                //{
+                //    string fileName = Guid.NewGuid().ToString();
+                //    var uploads = Path.Combine(wwwRootPath, @"images/products");
+                //    var extension = Path.GetExtension(file.FileName);
+
+                //    if (obj.Product.ImageUrl != null)
+                //    {
+                //        var oldImagePath = Path.Combine(wwwRootPath, obj.Product.ImageUrl.TrimStart('\\'));
+                //        if (System.IO.File.Exists(oldImagePath))
+                //        {
+                //            System.IO.File.Delete(oldImagePath);
+                //        }
+                //    }
+
+                //    using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                //    {
+                //        file.CopyTo(fileStreams);
+                //    }
+                //    obj.Product.ImageUrl = @"/images/products/" + fileName + extension;
+
+                //}
                 if (file != null)
                 {
-                    string fileName = Guid.NewGuid().ToString();
-                    var uploads = Path.Combine(wwwRootPath, @"images/products");
-                    var extension = Path.GetExtension(file.FileName);
-
-                    if (obj.Product.ImageUrl != null)
+                    await using var stream = file.OpenReadStream();
+                    var uploadParams = new ImageUploadParams
                     {
-                        var oldImagePath = Path.Combine(wwwRootPath, obj.Product.ImageUrl.TrimStart('\\'));
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
+                        File = new FileDescription(file.FileName, stream),
+                        //Transformation = new Transformation().Height(500).Width(500).Crop("fill")
+                    };
 
-                    using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+                    if (uploadResult.Error != null)
                     {
-                        file.CopyTo(fileStreams);
+                        throw new Exception(uploadResult.Error.Message);
                     }
-                    obj.Product.ImageUrl = @"/images/products/" + fileName + extension;
-
+                    var photo = new CoverPhoto
+                    {
+                        Url = uploadResult.Url.ToString(),
+                        PublicId = uploadResult.PublicId
+                    };
+                    obj.Product.CoverPhoto = photo;
+                    _unitOfWork.CoverPhoto.Add(photo);
                 }
                 if (obj.Product.Id == 0)
                 {
@@ -136,13 +164,15 @@ namespace BulkyBookWeb.Controllers
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
-            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
-            if (System.IO.File.Exists(oldImagePath))
-            {
-                System.IO.File.Delete(oldImagePath);
-            }
-
+            //var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
+            //if (System.IO.File.Exists(oldImagePath))
+            //{
+            //    System.IO.File.Delete(oldImagePath);
+            //}
+            var deleteParams = new DeletionParams(obj.CoverPhoto.PublicId);
+            var result = await _cloudinary.DestroyAsync(deleteParams);
             _unitOfWork.Product.Remove(obj);
+            _unitOfWork.CoverPhoto.Remove(obj.CoverPhoto);
             await _unitOfWork.SaveAsync();
             return Json(new { success = true, message = "Product delete was successful" });
 

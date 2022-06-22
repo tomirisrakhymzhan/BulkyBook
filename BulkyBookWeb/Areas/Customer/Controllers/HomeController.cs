@@ -32,7 +32,7 @@ namespace BulkyBookWeb.Controllers
         public IActionResult Index(string searchString, int? category)
         {
             //get all products
-            var products = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType");
+            var products = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType,CoverPhoto");
             //apply search
             if (!string.IsNullOrEmpty(searchString))
             {

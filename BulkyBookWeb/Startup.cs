@@ -17,6 +17,7 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
 using BulkyBook.DataAccess.DBInitializer;
+using CloudinaryDotNet;
 
 namespace BulkyBookWeb
 {
@@ -47,7 +48,7 @@ namespace BulkyBookWeb
                 if (env == "Development")
                 {
                     // Use connection string from file.
-                    connStr = Configuration.GetConnectionString("DefaultConnection");
+                    connStr = Configuration.GetConnectionString("ApplicationDBContext");
                 }
                 else
                 {
@@ -99,7 +100,16 @@ namespace BulkyBookWeb
                 options.AppId = "527467182458437";
                 options.AppSecret = "757208b0e2b238bad1a5e63df07c2bc3";
             });
+            var cloudName = Configuration.GetValue<string>("Cloudinary:CloudName");
+            var apiKey = Configuration.GetValue<string>("Cloudinary:ApiKey");
+            var apiSecret = Configuration.GetValue<string>("Cloudinary:ApiSecret");
 
+            if (new[] { cloudName, apiKey, apiSecret }.Any(string.IsNullOrWhiteSpace))
+            {
+                throw new ArgumentException("Please specify Cloudinary account details!");
+            }
+
+            services.AddSingleton(new Cloudinary(new CloudinaryDotNet.Account(cloudName, apiKey, apiSecret)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -54,5 +54,10 @@ namespace BulkyBook.Models
         public int CoverTypeId { get; set; }
         [ValidateNever]
         public CoverType CoverType { get; set; }
+
+        [Display(Name = "Cover Photo")]
+        public int CoverPhotoId { get; set; }
+        [ValidateNever]
+        public CoverPhoto CoverPhoto { get; set; }
     }
 }
