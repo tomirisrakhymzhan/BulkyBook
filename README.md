@@ -1,5 +1,5 @@
 # BulkyBook
-BulkyBook is an e-commerce book shop. See [demo](https://my-eventify.herokuapp.com/).
+BulkyBook is an e-commerce book shop. See [demo](https://bulkybookshop.herokuapp.com/).
 
 ## Technology used
 The app is built using .NET 6: 
